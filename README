@@ -1,0 +1,25 @@
+archsak, e342791191
+Aharon Saksonov 207600164, Elsa Sebagh 342791191
+EX: 1
+
+FILES:
+myfile.c -- a file with some code
+myfile.h -- a file with some headers
+
+REMARKS:
+These are some remarks that
+I want the graders to know
+about this submission.
+
+ANSWERS:
+
+Assignment 1:
+The OS copy some file and get the file access mode and the file status flags.
+After it the OS change the address of the end of the heap.  after it,
+the OS Retrieves the file status flags for file descriptor 3, and after all print two messages -
+the first says that the run failed with incorrect number of arguments, and the second success message,
+and close the file.
+
+Assignment 2:
+Here are answers to theoreical questions
+if there were such questions in the exercise.
