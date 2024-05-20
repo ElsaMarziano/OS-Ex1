@@ -21,7 +21,7 @@ the first says that the run failed with incorrect number of arguments, and the s
 and close the file.
 
 Assignment 2:
-
+![graph](./graph.jpeg)
 Graph explanation:
 We can see the plot of the sequential access is more or less stable, while the random access has two noticeable
 grows. If we had run the program on bigger inputs, those would have been more noticeable (aka both plots would have been

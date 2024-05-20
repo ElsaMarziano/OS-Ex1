@@ -98,6 +98,10 @@ int main(int argc, char* argv[])
   repeat = std::stoull(argv[3]);
     for(uint64_t i =100; i<max_size; i*=factor) {
       array_element_t* arr = (array_element_t*)malloc(i);
+      if (arr == nullptr){
+          std::cerr << "failed in allocate memory";
+          return -1;
+      }
       register uint64_t arr_size = i / sizeof(array_element_t);
       measurement rand_latency = measure_latency (repeat, arr, arr_size, zero);
       measurement sequential_latency = measure_sequential_latency (repeat, arr,
@@ -106,7 +110,10 @@ int main(int argc, char* argv[])
       std::cout << i << "," << rand_latency.access_time - rand_latency
       .baseline << "," <<  sequential_latency.access_time -
       sequential_latency.baseline << std::endl;
-      free(arr);
+      if (! free(arr){
+          std::cout << "failed in free memory";
+          return -1;
+      };
     }
 
 }
