@@ -15,7 +15,7 @@
 uint64_t nanosectime(struct timespec t)
 {
 	// Your code here
-    return t.tv_nsec;
+    return t.tv_sec*1000000000 + t.tv_nsec;
 }
 
 /**
@@ -42,7 +42,7 @@ struct measurement measure_sequential_latency(uint64_t repeat, array_element_t* 
   {
     register uint64_t index = rnd % arr_size;
     rnd ^= index & zero;
-    rnd +=1;
+    rnd = i + 1;
   }
   struct timespec t1;
   timespec_get(&t1, TIME_UTC);
@@ -55,7 +55,7 @@ struct measurement measure_sequential_latency(uint64_t repeat, array_element_t* 
   {
     register uint64_t index = rnd % arr_size;
     rnd ^= arr[index] & zero;
-    rnd += 1;
+        rnd =i + 1;
   }
   struct timespec t3;
   timespec_get(&t3, TIME_UTC);
@@ -87,20 +87,18 @@ struct measurement measure_sequential_latency(uint64_t repeat, array_element_t* 
  */
 int main(int argc, char* argv[])
 {
-    if(argc <4) return 0;
+    if(argc <4 or argc > 4) return 0;
     // zero==0, but the compiler doesn't know it. Use as the zero arg of measure_latency and measure_sequential_latency.
     struct timespec t_dummy;
     timespec_get(&t_dummy, TIME_UTC);
     const uint64_t zero = nanosectime(t_dummy)>1000000000ull?0:nanosectime(t_dummy);
-
-    // Your code here
-    int max_size = std::stoi(argv[1]);
-    int factor = std::stoi(argv[2]);
-    int repeat = std::stoi(argv[3]);
-
-    for(int i =100; i<max_size; i*=factor) {
-      array_element_t* arr = new array_element_t[i];
-      int arr_size = i*sizeof(array_element_t);
+   uint64_t max_size ,repeat;
+  max_size = std::stoull(argv[1]);
+  double factor = std::stod(argv[2]);
+  repeat = std::stoull(argv[3]);
+    for(uint64_t i =100; i<max_size; i*=factor) {
+      array_element_t* arr = (array_element_t*)malloc(i);
+      register uint64_t arr_size = i / sizeof(array_element_t);
       measurement rand_latency = measure_latency (repeat, arr, arr_size, zero);
       measurement sequential_latency = measure_sequential_latency (repeat, arr,
                                                                   arr_size,
@@ -108,7 +106,7 @@ int main(int argc, char* argv[])
       std::cout << i << "," << rand_latency.access_time - rand_latency
       .baseline << "," <<  sequential_latency.access_time -
       sequential_latency.baseline << std::endl;
-      delete[] arr;
+      free(arr);
     }
 
 }

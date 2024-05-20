@@ -21,5 +21,22 @@ the first says that the run failed with incorrect number of arguments, and the s
 and close the file.
 
 Assignment 2:
-Here are answers to theoreical questions
-if there were such questions in the exercise.
+[GRAPH PICTURE]
+Graph explanation:
+We can see the plot of the sequential access is more or less stable, while the random access has two noticeable
+grows. If we had run the program on bigger inputs, those would have been more noticeable (aka both plots would have been
+more smooth and with less spikes).
+The random access plot and sequential access plot start similar when all the array size fits in L1d, therefore all access
+is from L1d with a stable latency.
+With larger arrays that no longer fit only in L1d, we need to store some of the array in L2 (and L3 with even bigger
+arrays). With sequential access, the CPU hardware prefetching can easily guess which parts of the array we will want to
+access next and saves them in L1d, so the latency stays similar.
+However, with random access, the CPU can't properly guess which element we will want to access next, therefore most of
+the time we still need to access L2 or L3. Those are bigger and slower caches, therefore we can see a noticeable increase
+in the latency when the array size goes from L1d to L2 and from L2 to L3.
+
+
+
+
+
+
