@@ -42,7 +42,7 @@ struct measurement measure_sequential_latency(uint64_t repeat, array_element_t* 
   {
     register uint64_t index = rnd % arr_size;
     rnd ^= index & zero;
-        rnd = i + 1;
+    rnd = i + 1;
   }
   struct timespec t1;
   timespec_get(&t1, TIME_UTC);
@@ -87,7 +87,7 @@ struct measurement measure_sequential_latency(uint64_t repeat, array_element_t* 
  */
 int main(int argc, char* argv[])
 {
-    if(argc <4) return 0;
+    if(argc <4 or argc > 4) return 0;
     // zero==0, but the compiler doesn't know it. Use as the zero arg of measure_latency and measure_sequential_latency.
     struct timespec t_dummy;
     timespec_get(&t_dummy, TIME_UTC);
