@@ -1,5 +1,7 @@
 // OS 24 EX1
 
+#include <string>
+#include <iostream>
 #include "memory_latency.h"
 #include "measure.h"
 
@@ -13,6 +15,7 @@
 uint64_t nanosectime(struct timespec t)
 {
 	// Your code here
+    return t.tv_nsec;
 }
 
 /**
@@ -29,6 +32,43 @@ uint64_t nanosectime(struct timespec t)
 struct measurement measure_sequential_latency(uint64_t repeat, array_element_t* arr, uint64_t arr_size, uint64_t zero)
 {
     // Your code here
+  repeat = arr_size > repeat ? arr_size:repeat; // Make sure repeat >= arr_size
+
+  // Baseline measurement:
+  struct timespec t0;
+  timespec_get(&t0, TIME_UTC);
+  register uint64_t rnd=12345;
+  for (register uint64_t i = 0; i < repeat; i++)
+  {
+    register uint64_t index = rnd % arr_size;
+    rnd ^= index & zero;
+    rnd +=1;
+  }
+  struct timespec t1;
+  timespec_get(&t1, TIME_UTC);
+
+  // Memory access measurement:
+  struct timespec t2;
+  timespec_get(&t2, TIME_UTC);
+  rnd=(rnd & zero) ^ 12345;
+  for (register uint64_t i = 0; i < repeat; i++)
+  {
+    register uint64_t index = rnd % arr_size;
+    rnd ^= arr[index] & zero;
+    rnd += 1;
+  }
+  struct timespec t3;
+  timespec_get(&t3, TIME_UTC);
+
+  // Calculate baseline and memory access times:
+  double baseline_per_cycle=(double)(nanosectime(t1)- nanosectime(t0))/(repeat);
+  double memory_per_cycle=(double)(nanosectime(t3)- nanosectime(t2))/(repeat);
+  struct measurement result;
+
+  result.baseline = baseline_per_cycle;
+  result.access_time = memory_per_cycle;
+  result.rnd = rnd;
+  return result;
 }
 
 /**
@@ -47,10 +87,28 @@ struct measurement measure_sequential_latency(uint64_t repeat, array_element_t* 
  */
 int main(int argc, char* argv[])
 {
+    if(argc <4) return 0;
     // zero==0, but the compiler doesn't know it. Use as the zero arg of measure_latency and measure_sequential_latency.
     struct timespec t_dummy;
     timespec_get(&t_dummy, TIME_UTC);
     const uint64_t zero = nanosectime(t_dummy)>1000000000ull?0:nanosectime(t_dummy);
 
     // Your code here
+    int max_size = std::stoi(argv[1]);
+    int factor = std::stoi(argv[2]);
+    int repeat = std::stoi(argv[3]);
+
+    for(int i =100; i<max_size; i*=factor) {
+      array_element_t* arr = new array_element_t[i];
+      int arr_size = i*sizeof(array_element_t);
+      measurement rand_latency = measure_latency (repeat, arr, arr_size, zero);
+      measurement sequential_latency = measure_sequential_latency (repeat, arr,
+                                                                  arr_size,
+                                                            zero);
+      std::cout << i << "," << rand_latency.access_time - rand_latency
+      .baseline << "," <<  sequential_latency.access_time -
+      sequential_latency.baseline << std::endl;
+      delete[] arr;
+    }
+
 }
